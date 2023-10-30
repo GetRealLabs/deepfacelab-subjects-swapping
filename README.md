@@ -19,7 +19,7 @@ $ conda create -n deepfacelab python=3.7
 $ conda activate deepfacelab
 
 # Install your GPU lib Nvidia or AMD
-$ conda install -c conda-forge cudatookit cudnn
+$ conda install -c conda-forge cudatoolkit cudnn
 
 # Either
 $ pip install -r requirements.txt
@@ -46,7 +46,7 @@ $ python auto_main.py to_subject -h
 
 $ python auto_main.py to_subject \
 --videos_dir $TMP_RAW_VIDEOS \
---subjects_dir $SUBEJCTS_DIR
+--subjects_dir $SUBJECTS_DIR
 ```
 
 At the end of this scrip you should have a number of subject equivalent of the number of raw videos. Moreover, the original videos inside the subject's folder should be renamed **output.***.
