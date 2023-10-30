@@ -19,13 +19,11 @@ $ conda create -n deepfacelab python=3.7
 $ conda activate deepfacelab
 
 # Install your GPU lib Nvidia or AMD
-$ conda install -c conda-forge cudatookit cudnn
+$ conda install -c conda-forge cudatoolkit cudnn
 
-# Either
 $ pip install -r requirements.txt
 
-# Or
-$ conda install -c conda-forge --file requirements.txt
+
 ```
 
 - Define a temporary folder to place your raw video, a folder for the different processes output (subjects) and finally a folder for the *SAEHD* model to use for training:
@@ -46,10 +44,10 @@ $ python auto_main.py to_subject -h
 
 $ python auto_main.py to_subject \
 --videos_dir $TMP_RAW_VIDEOS \
---subjects_dir $SUBEJCTS_DIR
+--subjects_dir $SUBJECTS_DIR
 ```
 
-At the end of this scrip you should have a number of subject equivalent of the number of raw videos. Moreover, the original videos inside the subject's folder should be renamed **output.***.
+At the end of this script you should have a number of subject equivalent of the number of raw videos. Moreover, the original videos inside the subject's folder should be renamed **output.***.
 
 If you want to remove subjects you should use this scrip: ```$ python auto_main.py update_wrk -h```, or add subjects (never tested) you should re-use the script above.
 
