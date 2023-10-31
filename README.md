@@ -90,7 +90,10 @@ To generate *deepfake* it is better to use a pretrained model on internet (speed
 
 You can **pretrain** your model on your face set to hopefully have better and faster results (**mandatory** if you create your own model from scratch) by either **monitoring the loss** and quit the programs when you are satisfied or set a **maximum number iteration** (should be higher than the current reached iteration by the model in the case you are using a pretrained model from internet) 
 
+
 **Pack** the faces :
+
+Add a folder inside the SUBJECTS_DIR folder titled 'pretrain_faces' and then run this command
 
 ```bash
 # Usage
