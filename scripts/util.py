@@ -8,7 +8,18 @@ def cp_aligned_frames(subjects: List[Subject], dst_dir: Path) -> None:
     import shutil
     hard_clean_dir(dst_dir)
     for subject in tqdm(subjects, total=len(subjects), desc="copying subject's aligned frames", unit="subject", miniters=1.0):
-        for src_file in subject.aligned_frames().glob('*'):
+        
+        # Debug Information
+        print(f"Processing subject with ID: {subject.id()}")
+        print(f"Root directory of subject: {subject.root_dir().name}")
+        try:
+            aligned_frames_list = list(subject.aligned_frames().glob('*'))
+            print(f"Number of aligned frames for the subject: {len(aligned_frames_list)}")
+        except AttributeError as e:
+            print(f"Error: {e}")
+            continue
+
+        for src_file in aligned_frames_list:
             tmp = dst_dir / f"{subject.root_dir().name}_{subject.id()}_{src_file.stem}{src_file.suffix}"
             shutil.copy(src_file, tmp)
 
