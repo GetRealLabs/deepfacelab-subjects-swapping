@@ -149,14 +149,6 @@ def gen_warp_params (w, flip=False, rotation_range=[-10,10], scale_range=[-0.5, 
     except Exception as e:
         print("Error with hardcoded values:", e)'''
     center = (w // 2.0, w // 2.0)
-    print("Center:", center)
-    print("Rotation:", rotation)
-    print("Scale:", scale)
-    print("W: ", w)
-    print("Type of center: ", type(center))
-    print("Type of W: ", type(w))
-    print("Type of rotation:", type(rotation))
-    print("Type of scale:", type(scale))
     random_transform_mat = cv2.getRotationMatrix2D(center, rotation, scale)
     random_transform_mat[:, 2] += (tx*w, ty*w)
 
