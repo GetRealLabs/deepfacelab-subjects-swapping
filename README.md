@@ -11,6 +11,8 @@ The purpose is to generate deepfake between each video with each other.
 ### Prerequisites
 
 - Install [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+- Install ffmpeg
+- Install visual studio c++
 - Environment creation :
 
 ```bash
@@ -28,11 +30,8 @@ $ pip install -r requirements.txt
 
 - Define a temporary folder to place your raw video, a folder for the different processes output (subjects) and finally a folder for the *SAEHD* model to use for training:
 
-```bash
-$ TMP_RAW_VIDEOS="/path/to/tmp/videos/folder"
-$ SUBJECTS_DIR="/path/to/your/output/subjects/folder"
-$ MODEL_DIR="/path/to/your/models/dir"
-```
+    Create and name your three folders: TMP_RAW_VIDEOS SUBJECTS_DIR MODEL_DIR
+    Place the RTT models from [this link](https://drive.google.com/file/d/1auhf7Wtuwygi8rGFx4EJ4OEgVp1LtQpj/view) into the MODEL_DIR folder
 
 ### First step: Workspace creation
 
@@ -40,7 +39,7 @@ Organize your video into subject folder tree :
 
 ```bash
 # Usage
-$ python auto_main.py to_subject -h
+
 
 $ python auto_main.py to_subject \
 --videos_dir $TMP_RAW_VIDEOS \
@@ -49,32 +48,13 @@ $ python auto_main.py to_subject \
 
 At the end of this script you should have a number of subject equivalent of the number of raw videos. Moreover, the original videos inside the subject's folder should be renamed **output.***.
 
-If you want to remove subjects you should use this scrip: ```$ python auto_main.py update_wrk -h```, or add subjects (never tested) you should re-use the script above.
 
-You can also clean the **workspace** by removing the unused frames during the process using the following script:
-
-```bash
-# Usage
-$ python auto_main.py clean -h
-
-# ONE AT THE TIME
-# Remove the merged frames
-$ python auto_main.py clean --subjects_dir $SUBJECTS_DIR --redo_merge
-
-# Remove aligned and original frames
-$ python auto_main.py clean --subjects_dir $SUBJECTS_DIR --redo_original
-
-# Remove extracted faces (different frames than the aligned one)
-$ python auto_main.py clean --subjects_dir $SUBJECTS_DIR --redo_face
-```
 
 ### Second step: Extract Frames and Alignments
 
 Make frames from the *original videos* and extract the *alignment* :
 
 ```bash
-# Usage
-$ python auto_main.py extract -h
 
 $ python auto_main.py extract \
 --subjects_dir $SUBJECTS_DIR \
@@ -84,48 +64,8 @@ $ python auto_main.py extract \
 
 The better the dimension is the better the deepfake quality will be, same for the png quality.
 
-### Third step: Model Choice and Pretrain
 
-To generate *deepfake* it is better to use a pretrained model on internet (speed-up process, better face generalization). You can find model on the [***DeepfakeVFX***](https://www.deepfakevfx.com/) website. It will help you choose your model parameters according to your computer resources and other useful **tools**.
-
-You can **pretrain** your model on your face set to hopefully have better and faster results (**mandatory** if you create your own model from scratch) by either **monitoring the loss** and quit the programs when you are satisfied or set a **maximum number iteration** (should be higher than the current reached iteration by the model in the case you are using a pretrained model from internet) 
-
-
-**Pack** the faces :
-
-Add a folder inside the SUBJECTS_DIR folder titled 'pretrain_faces' and then run this command
-
-```bash
-# Usage
-$ python auto_main.py pack -h
-
-$ python auto_main.py pack --subjects_dir $SUBJECTS_DIR
-```
-
-**Pretrain** your model (Follow the instructions at the beginning of the script) :
-
-```bash
-# Usage
-$ python auto_main.py pretrain -h
-
-# The program will open a new terminal to setup the model argument, remember to modify the 
-# iteration goal (higher than the current reached iteration) and the pretrain value (set it to true).
-$ python auto_main.py pretrain \
---subjects_dir $SUBJECTS_DIR \
---model_dir $MODEL_DIR \
---model_dir_backup $MODEL_DIR + "my-backup"
-```
-
-*OPTIONAL*: You can also create a benchmark on different models to choose the best one that suit your need :
-
-```bash
-# Usage
-$ python auto_main.py face_swap_benchmark -h
-```
-
-The *benchmark* will also help you to choose which interation should be enough to generate the videos in the next part.
-
-## Fourth step: Train on Subjects and Merge the Frames
+## Third step: Train on Subjects and Merge the Frames
 
 Two processes are available to execute this step:
 
@@ -191,42 +131,3 @@ $ python auto_main.py frames_generated_benchmark -h
 ```
 
 this algorithm uses the [YuNet](YuNet_model_face_recognition) onxx model. You can modify the face extraction / face recognition algorithm if you want.
-
-### Fifth step: DataFrame creation
-
-It is useful to create a DataFrame to use this dataset for another project in order to make a frame referencing.
-
-***First*** you need to extract the faces of the merged and original frames (same remark: you cna modify the face extraction [method](scripts/extract/face))
-
-```bash
-# Usage
-$ python auto_main.py extract_face_from_subject -h 
-
-# You can also put other videos and non face extracted frame (real or fake) in the random_data_augmentation folder to
-# add more data to the dataset
-
-# Usage
-$ python auto_main.py extract_face_from_video_data_augmentation -h
-```
-
-**Then** you can create the DataFrame:
-
-```bash
-# Usage
-$ python auto_main.py dataframe -h
-```
-
-This algorithm will not add two identical images (SHA256 verification), it can also be stopped or enhanced.
-
-DataFrame main structure: 
-
-| Index                      | video                                           | original                                                                  | label                    | SHA256              | top                                                                                                  | bottom              | left              | right              |
-|:---------------------------|:------------------------------------------------|:--------------------------------------------------------------------------|:-------------------------|:--------------------|:-----------------------------------------------------------------------------------------------------|:--------------------|:------------------|:-------------------|
-| relative path to the frame | relative path of the video related to the frame | relative path of the original video related to fake frame (possible None) | True (Fake) False (Real) | SHA256 of the frame | top corner of the image (useful if you did not extracted the face but just inform the extracted box) | same but for bottom | same but for left | same but for right |
-
-## Possible Upgrade
-
-- Change the [Subject](scripts/Subject.py) class for better organization of images;
-- Fix the possibility to select the iteration goal as script arg;
-- Add to possibility to automatically select the pretrain mode --> avoid terminal opening to select intern parameters;
-- Find a better way to merge the predicted faces.
