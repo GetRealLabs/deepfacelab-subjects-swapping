@@ -139,10 +139,14 @@ def MergeMaskedFace (predictor_func, predictor_input_shape,
 
     out_img = None
     out_merging_mask_a = None
+    cfg.mode = 'seamless-hist-match'
+    cfg.color_transfer_mode = 1
     if cfg.mode == 'original':
+        print("original")
         return img_bgr, img_face_mask_a
 
     elif 'raw' in cfg.mode:
+        print('raw')
         if cfg.mode == 'raw-rgb':
             out_img_face = cv2.warpAffine( prd_face_bgr, face_output_mat, img_size, np.empty_like(img_bgr), cv2.WARP_INVERSE_MAP | cv2.INTER_CUBIC)
             out_img_face_mask = cv2.warpAffine( np.ones_like(prd_face_bgr), face_output_mat, img_size, np.empty_like(img_bgr), cv2.WARP_INVERSE_MAP | cv2.INTER_CUBIC)
@@ -156,7 +160,7 @@ def MergeMaskedFace (predictor_func, predictor_input_shape,
 
         out_img = np.clip (out_img, 0.0, 1.0 )
     else:
-
+        print("First else")
         # Process if the mask meets minimum size
         maxregion = np.argwhere( img_face_mask_a >= 0.1 )
         if maxregion.size != 0:
@@ -265,6 +269,8 @@ def MergeMaskedFace (predictor_func, predictor_input_shape,
                             out_face_bgr = np.clip (out_face_bgr, 0.0, 1.0)
                         elif cfg.color_transfer_mode == 8: #mix-m
                             out_face_bgr = imagelib.color_transfer_mix (out_face_bgr*wrk_face_mask_area_a, dst_face_bgr*wrk_face_mask_area_a)
+
+                    
 
                     if cfg.mode == 'seamless-hist-match':
                         out_face_bgr = imagelib.color_hist_match(out_face_bgr, dst_face_bgr, cfg.hist_match_threshold)

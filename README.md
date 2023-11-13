@@ -11,6 +11,8 @@ The purpose is to generate deepfake between each video with each other.
 ### Prerequisites
 
 - Install [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+- Install ffmpeg
+- Install visual studio c++
 - Environment creation :
 
 ```bash
@@ -37,7 +39,7 @@ Organize your video into subject folder tree :
 
 ```bash
 # Usage
-$ python auto_main.py to_subject -h
+
 
 $ python auto_main.py to_subject \
 --videos_dir $TMP_RAW_VIDEOS \
@@ -53,8 +55,6 @@ At the end of this script you should have a number of subject equivalent of the 
 Make frames from the *original videos* and extract the *alignment* :
 
 ```bash
-# Usage
-$ python auto_main.py extract -h
 
 $ python auto_main.py extract \
 --subjects_dir $SUBJECTS_DIR \
@@ -64,22 +64,8 @@ $ python auto_main.py extract \
 
 The better the dimension is the better the deepfake quality will be, same for the png quality.
 
-### Third step: Pack the faces
 
-
-**Pack** the faces :
-
-Add a folder inside the SUBJECTS_DIR folder titled 'pretrain_faces' and then run this command
-
-```bash
-# Usage
-$ python auto_main.py pack -h
-
-$ python auto_main.py pack --subjects_dir $SUBJECTS_DIR
-```
-
-
-## Fourth step: Train on Subjects and Merge the Frames
+## Third step: Train on Subjects and Merge the Frames
 
 Two processes are available to execute this step:
 
@@ -145,42 +131,3 @@ $ python auto_main.py frames_generated_benchmark -h
 ```
 
 this algorithm uses the [YuNet](YuNet_model_face_recognition) onxx model. You can modify the face extraction / face recognition algorithm if you want.
-
-### Fifth step: DataFrame creation
-
-It is useful to create a DataFrame to use this dataset for another project in order to make a frame referencing.
-
-***First*** you need to extract the faces of the merged and original frames (same remark: you cna modify the face extraction [method](scripts/extract/face))
-
-```bash
-# Usage
-$ python auto_main.py extract_face_from_subject -h 
-
-# You can also put other videos and non face extracted frame (real or fake) in the random_data_augmentation folder to
-# add more data to the dataset
-
-# Usage
-$ python auto_main.py extract_face_from_video_data_augmentation -h
-```
-
-**Then** you can create the DataFrame:
-
-```bash
-# Usage
-$ python auto_main.py dataframe -h
-```
-
-This algorithm will not add two identical images (SHA256 verification), it can also be stopped or enhanced.
-
-DataFrame main structure: 
-
-| Index                      | video                                           | original                                                                  | label                    | SHA256              | top                                                                                                  | bottom              | left              | right              |
-|:---------------------------|:------------------------------------------------|:--------------------------------------------------------------------------|:-------------------------|:--------------------|:-----------------------------------------------------------------------------------------------------|:--------------------|:------------------|:-------------------|
-| relative path to the frame | relative path of the video related to the frame | relative path of the original video related to fake frame (possible None) | True (Fake) False (Real) | SHA256 of the frame | top corner of the image (useful if you did not extracted the face but just inform the extracted box) | same but for bottom | same but for left | same but for right |
-
-## Possible Upgrade
-
-- Change the [Subject](scripts/Subject.py) class for better organization of images;
-- Fix the possibility to select the iteration goal as script arg;
-- Add to possibility to automatically select the pretrain mode --> avoid terminal opening to select intern parameters;
-- Find a better way to merge the predicted faces.
